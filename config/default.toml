@@ -1,0 +1,71 @@
+# ProzChain Default Configuration
+
+# Node Settings
+[node]
+# Node type: "validator", "full", "light", "archive", or "rpc"
+type = "full"
+display_name = "ProzChain Test Node"
+max_peers = 25
+
+# Validator settings (used only when type = "validator")
+[node.validator]
+key_path = ""
+stake_amount = 0
+
+# Light client settings (used only when type = "light")
+[node.light_client]
+trusted_validators = []
+
+# Archive node settings (used only when type = "archive")
+[node.archive]
+pruning_strategy = "archive"  # "archive", "minimal", or "custom:blocks:days"
+
+# RPC node settings (used only when type = "rpc")
+[node.rpc]
+enabled = false
+listen_address = "127.0.0.1:9933"
+cors_domains = ["*"]
+max_requests_per_second = 100
+
+# Network Settings
+[network]
+listen_addresses = ["0.0.0.0:30333"]
+external_addresses = []
+bootstrap_nodes = [
+    "bootstrap1.prozchain.io:30333",
+    "bootstrap2.prozchain.io:30333"
+]
+dns_seeds = [
+    "seed1.prozchain.io",
+    "seed2.prozchain.io"
+]
+connection_timeout_seconds = 10
+ping_interval_seconds = 60
+peer_exchange_interval_seconds = 300
+enable_upnp = true
+enable_nat_traversal = true
+stun_servers = ["stun.prozchain.io:3478"]
+
+# Connection limits
+[network.limits]
+max_inbound = 125
+target_outbound = 8
+max_peers_per_ip = 1
+
+# Advanced Network Settings
+[network.advanced]
+min_protocol_version = 1
+max_message_size = 33554432  # 32 MiB
+message_timeout_seconds = 30
+handshake_timeout_ms = 5000
+disable_peer_exchange = false
+reserved_peers = []
+reserved_only = false
+
+# Log Settings
+[log]
+level = "info"
+enable_file_logging = true
+log_file = "prozchain.log"
+max_log_files = 10
+max_log_file_size_mb = 10

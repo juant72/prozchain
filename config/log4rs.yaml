@@ -1,0 +1,56 @@
+# Default log4rs configuration
+refresh_rate: 30 seconds
+
+appenders:
+  # Console logger
+  stdout:
+    kind: console
+    encoder:
+      pattern: "{d(%Y-%m-%d %H:%M:%S)} {h({l})} [{t}] {M}:{L} - {m}{n}"
+
+  # File logger
+  file:
+    kind: file
+    path: "prozchain.log"
+    encoder:
+      pattern: "{d(%Y-%m-%d %H:%M:%S)} {l} [{t}] {M}:{L} - {m}{n}"
+    
+    # Rotation policy
+    policy:
+      # Rotate when file reaches 10 MB
+      trigger:
+        kind: size
+        limit: 10 mb
+      # Keep at most 5 archived log files
+      roller:
+        kind: fixed_window
+        pattern: "prozchain.{}.log"
+        base: 1
+        count: 5
+
+# Root logger level and appenders
+root:
+  level: info
+  appenders:
+    - stdout
+    - file
+
+# Module-specific settings
+loggers:
+  # Network layer
+  prozchain::network:
+    level: info
+  
+  # Connection management
+  prozchain::network::connection:
+    level: debug
+  
+  # Peer discovery
+  prozchain::network::discovery:
+    level: info
+  
+  # External dependencies that are too verbose
+  tokio:
+    level: warn
+  hyper:
+    level: warn

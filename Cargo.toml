@@ -1,0 +1,113 @@
+[package]
+name = "prozchain"
+version = "0.1.0"
+edition = "2021"
+authors = ["ProzChain Team <team@prozchain.io>"]
+description = "A high-performance blockchain in Rust"
+readme = "README.md"
+license = "MIT"
+repository = "https://github.com/prozchain/prozchain"
+
+[dependencies]
+# Async runtime and utilities
+tokio = { version = "1.36", features = ["full"] }  # Actualizado a 1.36 (última versión)
+futures = "0.3.30"  # Ya actualizado
+async-trait = "0.1.77"  # Ya actualizado
+
+# Networking
+# Actualizamos libp2p a la última versión estable con mantenimiento de compatibilidad
+libp2p = { version = "0.53", features = [
+    "tcp",
+    "dns",
+    "websocket",
+    "noise",
+    "yamux",
+    "kad",
+    "identify",
+    "ping",
+    "request-response",
+    "relay",
+    "metrics"
+]}  # Actualizado a 0.53
+socket2 = "0.5.6"  # Actualizado a 0.5.6
+trust-dns-resolver = "0.23.2"  # Actualizado a versión específica (0.23.2)
+
+# Serialización
+serde = { version = "1.0.198", features = ["derive"] }  # Actualizado a versión específica
+serde_json = "1.0.114"  # Actualizado a versión específica
+bincode = "1.3.3"  # Se mantiene (última versión estable de serie 1.x)
+bytes = "1.5.0"  # Versión específica
+unsigned-varint = { version = "0.8.0", features = ["std"] }  # Actualizado a 0.8.0
+
+# Cryptografía
+sha2 = "0.10.8"  # Ya actualizado
+ed25519-dalek = "2.1.1"  # Actualizado a versión específica
+x25519-dalek = "2.0.1"  # Actualizado a versión específica
+rand = "0.8.5"  # Ya actualizado
+chacha20poly1305 = "0.10.1"  # Ya actualizado
+snow = { version = "0.9.5", features = ["default-resolver"] }  # Actualizado a 0.9.5
+# Fix: rustls v0.22.x doesn't have dangerous_configuration feature
+rustls = "0.22.1"
+
+# Logging y métricas
+log = "0.4.21"  # Actualizado a 0.4.21
+env_logger = "0.11.2"  # Actualizado a versión específica
+tracing = "0.1.40"  # Actualizado a versión específica
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }  # Actualizado
+prometheus = { version = "0.13.4", features = ["process"] }  # Actualizado a 0.13.4
+
+# Manejo de errores
+thiserror = "1.0.57"  # Actualizado a versión específica
+anyhow = "1.0.79"  # Actualizado a versión específica
+
+# Estructuras de datos y utilidades
+lru = "0.12.2"  # Actualizado a versión específica
+dashmap = "5.5.3"  # Ya actualizado
+parking_lot = "0.12.1"  # Ya actualizado
+smallvec = "1.13.1"  # Actualizado a versión específica
+hex = "0.4.3"  # Ya actualizado
+
+# Configuración
+config = "0.14.0"  # Versión específica
+toml = "0.8.10"  # Actualizado a versión específica
+log4rs = "1.3.0"  # Nueva dependencia para configuración avanzada de logs
+
+# Optional dependencies
+metrics = { version = "0.21", optional = true }
+
+[dev-dependencies]
+proptest = "1.4.0"  # Versión específica
+quickcheck = "1.0.3"  # Actualizado a versión específica
+mockall = "0.12.1"  # Actualizado a versión específica
+tokio-test = "0.4.3"  # Actualizado a 0.4.3
+tempfile = "3.10.1"  # Actualizado a versión específica
+rstest = "0.18.2"  # Nueva dependencia para testing
+
+[features]
+default = []
+metrics = ["dep:metrics"]
+telemetry = ["metrics"]
+full = ["metrics", "telemetry"]
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+panic = "abort"
+strip = true
+
+[profile.dev]
+opt-level = 0
+debug = true
+
+[profile.bench]
+opt-level = 3
+debug = false
+
+[[bin]]
+name = "prozchain"
+path = "src/main.rs"
+
+[lib]
+name = "prozchain_lib"
+path = "src/lib.rs"
