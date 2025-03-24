@@ -3,7 +3,6 @@ mod tests {
     use crate::network::message::{Message, Protocol};
     use crate::network::node::{NodeConfig, ProzChainNode};
     use crate::network::service::{NetworkConfig, NetworkService};
-    use crate::types::PeerId;
     use std::time::Duration;
 
     #[tokio::test]

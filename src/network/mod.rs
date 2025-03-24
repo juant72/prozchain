@@ -5,7 +5,7 @@ pub mod connection;
 pub mod discovery;
 pub mod interfaces;
 pub mod message;
-pub mod metrics;
+pub mod metrics;  // Ahora apunta al directorio metrics/ con su mod.rs
 pub mod nat;
 pub mod node;
 pub mod propagation;

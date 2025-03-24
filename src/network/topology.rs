@@ -143,7 +143,7 @@ impl TopologyManager {
     
     /// Select peers for eviction when necessary
     pub fn select_eviction_candidates(&self, count: usize) -> Vec<PeerId> {
-        let mut candidates = Vec::new();
+        let candidates = Vec::new();
         
         // Skip if we don't have enough peers
         if self.inbound_connections.is_empty() {

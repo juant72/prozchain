@@ -1,7 +1,7 @@
 //! Message types and serialization for the network protocol
 
-use crate::types::{MessageHash, ProtocolId};
-use std::collections::{HashMap, HashSet};
+use crate::types::MessageHash;
+use std::collections::HashMap;
 use std::time::{Duration, Instant};
 use serde::{Serialize, Deserialize};
 

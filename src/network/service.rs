@@ -481,7 +481,7 @@ impl NetworkService {
     /// Start message handler
     async fn start_message_handler(&self) {
         // We need a separate channel for message handling
-        let message_tx = self._message_tx.clone();
+        // let message_tx = self._message_tx.clone();
         let mut message_rx = self.message_rx.lock().await.take().expect("Message receiver already taken");
         let connection_manager = self.connection_manager.clone();
         let broadcast_manager = self.broadcast_manager.clone();
@@ -544,7 +544,7 @@ impl NetworkService {
                 // Disconnect from peer
                 connection_manager.write().await.disconnect(peer_id, reason);
             }
-            NetworkMessage::SendMessage(_peer_id, message) => {
+            NetworkMessage::SendMessage(_peer_id, _message) => {
                 // Send message to specific peer
                 // This would require accessing the actual connection
                 let response = NetworkResponse::MessageSent(Ok(()));
