@@ -218,7 +218,7 @@ impl NetworkService {
     }
 
     /// Start the network service
-    pub async fn start(&self) -> Result<(), String> {
+    pub async fn start(&mut self) -> Result<(), String> {
         // Update status
         *self.status.write().await = NetworkStatus::Starting;
 
@@ -227,7 +227,10 @@ impl NetworkService {
 
         // Discover external IP and NAT type
         if self.config.enable_nat_traversal {
-            self.nat_traversal.write().await.discover_nat_type().await?;
+            match self.nat_traversal.write().await.discover_nat_type().await {
+                Ok(_) => log::info!("NAT discovery completed"),
+                Err(e) => log::warn!("NAT discovery failed: {}", e),
+            }
         }
 
         // Set up UPnP port forwarding if enabled
@@ -235,12 +238,21 @@ impl NetworkService {
             for listener in &listeners {
                 let local_addr = listener.local_addr().map_err(|e| e.to_string())?;
                 let local_port = local_addr.port();
-                self.nat_traversal.write().await.try_upnp_port_mapping(local_port).await?;
+                
+                match self.nat_traversal.write().await.try_upnp_port_mapping(local_port).await {
+                    Ok(_) => log::info!("UPnP port mapping successful for port {}", local_port),
+                    Err(e) => log::warn!("UPnP port mapping failed: {}. Continuing without UPnP.", e),
+                }
             }
+        } else {
+            log::info!("UPnP is disabled in configuration");
         }
 
         // Bootstrap initial peer connections
-        self.bootstrap_peer_connections().await?;
+        match self.bootstrap_peer_connections().await {
+            Ok(_) => log::info!("Peer bootstrap completed"),
+            Err(e) => log::warn!("Peer bootstrap had issues: {}", e),
+        }
 
         // Set up block propagation mechanisms
         self.setup_block_propagation().await?;

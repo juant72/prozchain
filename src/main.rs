@@ -9,6 +9,7 @@ use log::{info, warn, error};
 use std::env;
 use std::path::PathBuf;
 use std::time::Duration;
+use std::fs;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -28,8 +29,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     // Crear y iniciar el nodo
     info!("Inicializando nodo ProzChain...");
-    let (network_service, mut network_responses) = NetworkService::new(config).await
-        .map_err(|e| format!("Error al crear el servicio de red: {}", e))?;
+    let (mut network_service, mut network_responses) = NetworkService::new(config).await
+            .map_err(|e| format!("Error al crear el servicio de red: {}", e))?;
     
     // Procesar respuestas de la red en una tarea en segundo plano
     tokio::spawn(async move {
@@ -98,13 +99,34 @@ fn parse_config_path(args: &[String]) -> Option<PathBuf> {
 
 /// Cargar configuración desde archivo
 fn load_config(path: &PathBuf) -> Result<NetworkConfig, Box<dyn std::error::Error>> {
+    // Verificar si el directorio config existe, si no, crearlo
+    if let Some(parent) = path.parent() {
+        if !parent.exists() {
+            fs::create_dir_all(parent)?;
+        }
+    }
+
     // Intentar parsear la configuración TOML
     let config_contents = match std::fs::read_to_string(path) {
         Ok(contents) => contents,
         Err(e) => {
             warn!("No se pudo leer el archivo de configuración: {}", e);
-            // Devolver configuración por defecto si no se puede leer el archivo
-            return Ok(default_network_config());
+            
+            // Si no existe, crear un archivo de configuración predeterminado
+            if e.kind() == std::io::ErrorKind::NotFound {
+                let default_config = include_str!("../config/default.toml");
+                if let Some(parent) = path.parent() {
+                    if !parent.exists() {
+                        fs::create_dir_all(parent)?;
+                    }
+                }
+                fs::write(path, default_config)?;
+                warn!("Se ha creado un archivo de configuración predeterminado en {:?}", path);
+                default_config.to_string()
+            } else {
+                // Si hay otro error, devolver configuración por defecto
+                return Ok(default_network_config());
+            }
         }
     };
     
@@ -150,8 +172,8 @@ fn default_network_config() -> NetworkConfig {
         connection_timeout: Duration::from_secs(10),
         ping_interval: Duration::from_secs(60),
         peer_exchange_interval: Duration::from_secs(300),
-        enable_upnp: true,
-        enable_nat_traversal: true,
+        enable_upnp: false, // Cambiado a false para evitar errores
+        enable_nat_traversal: false, // También desactivamos NAT traversal por defecto
         stun_servers: vec![
             "stun.prozchain.io:3478".to_string(),
         ],
@@ -184,7 +206,7 @@ fn convert_toml_to_network_config(toml_config: config::Config) -> NetworkConfig 
         connection_limits,
     };
     
-    // Crear configuración de red usando todos los campos requeridos y completando campos faltantes con valores por defecto
+    // Crear configuración de red usando todos los campos requeridos
     NetworkConfig {
         node_config,
         listen_addresses: toml_config.network.listen_addresses.clone(),

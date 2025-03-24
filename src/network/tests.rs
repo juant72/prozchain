@@ -73,7 +73,7 @@ mod tests {
             blacklist: None,
         };
         
-        let (service, _responses) = NetworkService::new(config).await.unwrap();
+        let (mut service, _responses) = NetworkService::new(config).await.unwrap();
         let result = service.start().await;
         
         // Just check if it starts without error

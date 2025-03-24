@@ -11,6 +11,7 @@ pub use network::service::NetworkService;
 pub use network::message::Message;
 pub use network::node::ProzChainNode;
 pub use types::PeerId;
+pub use types::{ConnectionDirection, DisconnectReason, ProtocolId}; // Re-exportamos los tipos de red
 
 /// Initialize the library
 pub fn init() -> Result<(), String> {

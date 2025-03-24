@@ -14,6 +14,8 @@ tokio = { version = "1.36", features = ["full"] }  # Actualizado a 1.36 (última
 futures = "0.3.30"  # Ya actualizado
 async-trait = "0.1.77"  # Ya actualizado
 
+chrono = "0.4"
+
 # Networking
 # Actualizamos libp2p a la última versión estable con mantenimiento de compatibilidad
 libp2p = { version = "0.53", features = [
